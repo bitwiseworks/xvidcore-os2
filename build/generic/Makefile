@@ -68,7 +68,6 @@ ifeq ($(shell uname -s),OS/2)
 VENDOR ?=community
 BUILD_INFO=\#\#1\#\# $(shell date +'%d %b %Y %H:%M:%S')     $(shell uname -n)
 BUILDLEVEL_INFO=@\#$(VENDOR):$(PACKAGE_VERSION)\#@$(BUILD_INFO)::::0::
-OBJECTS += xvidcore.def
 IMP_LIB = xvidcode_dll.a
 else
 IMP_LIB =
@@ -146,19 +145,23 @@ $(STATIC_LIB): $(BUILD_DIR) $(OBJECTS)
 #      platforms
 #-----------------------------------------------------------------------------
 
-$(SHARED_LIB): $(BUILD_DIR) $(OBJECTS)
-	@echo "  L: $(@F)"
-	@$(INSTALL) -m 644 libxvidcore.def $(BUILD_DIR)/libxvidcore.def
-	@$(INSTALL) -m 644 libxvidcore.ld $(BUILD_DIR)/libxvidcore.ld
-	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS)
-
 ifeq ($(shell uname -s),OS/2)
+$(SHARED_LIB): $(BUILD_DIR) $(OBJECTS) xvidcore.def
+	@echo "  L: $(@F)"
+	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS) $(OBJECTS) xvidcore.def -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS)
+
 xvidcore.def:
 	@echo "  Def: $(@F)"
 	@echo "LIBRARY xvidcore INITINSTANCE TERMINSTANCE" > $(BUILD_DIR)/$@
 	@echo "DESCRIPTION \"$(BUILDLEVEL_INFO)@@xvidcore\"" >> $(BUILD_DIR)/$@
 	@echo "DATA MULTIPLE" >> $(BUILD_DIR)/$@
 	@cat libxvidcore.def | tr '\t' '_' | tr ';' ' ' >> $(BUILD_DIR)/$@
+else
+$(SHARED_LIB): $(BUILD_DIR) $(OBJECTS)
+	@echo "  L: $(@F)"
+	@$(INSTALL) -m 644 libxvidcore.def $(BUILD_DIR)/libxvidcore.def
+	@$(INSTALL) -m 644 libxvidcore.ld $(BUILD_DIR)/libxvidcore.ld
+	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS)
 endif
 
 #-----------------------------------------------------------------------------

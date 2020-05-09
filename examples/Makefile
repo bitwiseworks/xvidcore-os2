@@ -15,9 +15,15 @@ else
   EXTRALIBS = -lpthread -lc -lm
 endif
 
+ifeq ($(shell uname -s),OS/2)
+EXEEXT=.exe
+else
+EXEEXT=
+endif
+
 HDIR    = -I../src
 CFLAGS  = -g $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(SPECIFIC_CFLAGS)
-LDFLAGS = ../build/generic/=build/$(STATIC_LIB) $(EXTRALIBS)
+LDFLAGS += ../build/generic/=build/$(STATIC_LIB) $(EXTRALIBS)
 
 SOURCES= xvid_encraw.c xvid_decraw.c xvid_bench.c
 OBJECTS=$(SOURCES:.c=.o)
@@ -25,19 +31,19 @@ TESTS=$(SOURCES:.c=)
 
 all: $(TESTS)
 
-xvid_encraw: xvid_encraw.o
+xvid_encraw$(EXEEXT): xvid_encraw.o
 	$(CC) -o $@ $< $(LDFLAGS)
 
 xvid_encraw.o: xvid_encraw.c
 	$(CC) $(CFLAGS) $(HDIR) -c $<
 
-xvid_decraw: xvid_decraw.o
+xvid_decraw$(EXEEXT): xvid_decraw.o
 	$(CC) -o $@ $< $(LDFLAGS)
 
 xvid_decraw.o: xvid_decraw.c
 	$(CC) $(CFLAGS) $(HDIR) -c $<
 
-xvid_bench: xvid_bench.o
+xvid_bench$(EXEEXT): xvid_bench.o
 	$(CC) -o $@ $< $(LDFLAGS)
 
 xvid_bench.o: xvid_bench.c

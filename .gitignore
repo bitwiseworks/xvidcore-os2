@@ -9,6 +9,7 @@ aclocal.m4
 *.exe
 *.dll
 *.a
+*.o
 *.obj
 config.log
 config.status

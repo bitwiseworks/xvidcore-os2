@@ -1,0 +1,6 @@
+# ignore regenerated files from autoreconf -fvi
+build/generic/configure
+
+# ignore new files from autoreconf -fvi
+build/generic/autom4te.cache/
+aclocal.m4

@@ -170,12 +170,20 @@ BITS 32
       %ifdef FORMAT_COFF
             SECTION .rodata
       %else
+        %ifidn __OUTPUT_FORMAT__,aout
+            SECTION .text
+        %else
             SECTION .rodata align=SECTION_ALIGN
+        %endif
       %endif
 %endmacro
 
 %macro TEXT 0
+      %ifidn __OUTPUT_FORMAT__,aout
+            SECTION .text
+      %else
       SECTION .text align=SECTION_ALIGN
+      %endif
 %endmacro
 
 %macro cglobal 1

@@ -281,7 +281,7 @@ case "$target_os" in
 	;;
      os2-emx*)
 	AC_MSG_RESULT([.dll .a .o])
-	STATIC_EXTENSION="_dll.a"
+	STATIC_EXTENSION="a"
 	SHARED_EXTENSION="dll"
 	OBJECT_EXTENSION="o"
 	;;
@@ -368,6 +368,7 @@ case "$target_os" in
 	AC_MSG_RESULT([ok])
 	STATIC_LIB="xvidcore_dll.\$(STATIC_EXTENSION)"
 	SHARED_LIB="xvidcore.\$(SHARED_EXTENSION)"
+	SPECIFIC_LDFLAGS="-Zdll"
 	;;
      *)
         AC_MSG_RESULT([Unknown Platform (Using default -shared -lc -lm)])

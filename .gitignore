@@ -4,3 +4,13 @@ build/generic/configure
 # ignore new files from autoreconf -fvi
 build/generic/autom4te.cache/
 aclocal.m4
+
+# ignore al built files
+*.exe
+*.dll
+*.a
+*.obj
+config.log
+config.status
+platform.inc
+build/generic/=build/

@@ -62,7 +62,7 @@ OBJECTS += $(PPC_ALTIVEC_OBJECTS)
 # The VPATH mechanism could use a "per target" build directory
 # To keep it simple at the moment, the directory is fixed to "build"
 BUILD_DIR = =build
-VPATH     = $(SRC_DIR):$(BUILD_DIR)
+VPATH     = $(SRC_DIR) $(BUILD_DIR)
 
 #-----------------------------------------------------------------------------
 # The default rule

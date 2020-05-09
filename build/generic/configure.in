@@ -279,6 +279,12 @@ case "$target_os" in
 	SHARED_EXTENSION="so"
 	OBJECT_EXTENSION="o"
 	;;
+     os2-emx*)
+	AC_MSG_RESULT([.dll .a .o])
+	STATIC_EXTENSION="_dll.a"
+	SHARED_EXTENSION="dll"
+	OBJECT_EXTENSION="o"
+	;;
      *)
         AC_MSG_RESULT([Unknown OS - Using .so .a .o])
 	STATIC_EXTENSION="a"
@@ -357,6 +363,11 @@ case "$target_os" in
 	SO_LINK="libxvidcore.\$(SHARED_EXTENSION)"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libxvidcore.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm"
 	SPECIFIC_CFLAGS="-fPIC"
+	;;
+     os2-emx*)
+	AC_MSG_RESULT([ok])
+	STATIC_LIB="xvidcore_dll.\$(STATIC_EXTENSION)"
+	SHARED_LIB="xvidcore.\$(SHARED_EXTENSION)"
 	;;
      *)
         AC_MSG_RESULT([Unknown Platform (Using default -shared -lc -lm)])
@@ -492,6 +503,12 @@ if test "$ARCHITECTURE" = "IA32" -o "$ARCHITECTURE" = "X86_64" ; then
                    AC_MSG_RESULT([macho32])
                    NASM_FORMAT="macho32"
                fi
+               PREFIX="-DPREFIX"
+               MARK_FUNCS=""
+               ;;
+           os2-emx*)
+               AC_MSG_RESULT([aout])
+               NASM_FORMAT="aout"
                PREFIX="-DPREFIX"
                MARK_FUNCS=""
                ;;

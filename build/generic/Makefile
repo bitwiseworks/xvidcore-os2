@@ -64,13 +64,23 @@ OBJECTS += $(PPC_ALTIVEC_OBJECTS)
 BUILD_DIR = =build
 VPATH     = $(SRC_DIR) $(BUILD_DIR)
 
+ifeq ($(shell uname -s),OS/2)
+VENDOR ?=community
+BUILD_INFO=\#\#1\#\# $(shell date +'%d %b %Y %H:%M:%S')     $(shell uname -n)
+BUILDLEVEL_INFO=@\#$(VENDOR):$(PACKAGE_VERSION)\#@$(BUILD_INFO)::::0::
+OBJECTS += xvidcore.def
+IMP_LIB = xvidcode_dll.a
+else
+IMP_LIB =
+endif
+
 #-----------------------------------------------------------------------------
 # The default rule
 #-----------------------------------------------------------------------------
 
 .SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .c
 
-all: info $(STATIC_LIB) $(SHARED_LIB)
+all: info $(STATIC_LIB) $(SHARED_LIB) $(IMP_LIB)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Xvid has been successfully built."
@@ -111,6 +121,12 @@ $(PPC_ALTIVEC_OBJECTS): CFLAGS+= $(ALTIVEC_CFLAGS)
 # Static Library
 #-----------------------------------------------------------------------------
 
+ifeq ($(shell uname -s),OS/2)
+$(IMP_LIB): $(BUILD_DIR) $(OBJECTS) $(SHARED_LIB)
+	@echo "  L: $(@F)"
+	emximp -o $(BUILD_DIR)/$(@F) $(BUILD_DIR)/$(SHARED_LIB)
+endif
+
 $(STATIC_LIB): $(BUILD_DIR) $(OBJECTS)
 	@echo "  L: $(@F)"
 	@cd $(BUILD_DIR) && $(AR) rc $(@F) $(OBJECTS) && $(RANLIB) $(@F)
@@ -136,6 +152,15 @@ $(SHARED_LIB): $(BUILD_DIR) $(OBJECTS)
 	@$(INSTALL) -m 644 libxvidcore.ld $(BUILD_DIR)/libxvidcore.ld
 	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS)
 
+ifeq ($(shell uname -s),OS/2)
+xvidcore.def:
+	@echo "  Def: $(@F)"
+	@echo "LIBRARY xvidcore INITINSTANCE TERMINSTANCE" > $(BUILD_DIR)/$@
+	@echo "DESCRIPTION \"$(BUILDLEVEL_INFO)@@xvidcore\"" >> $(BUILD_DIR)/$@
+	@echo "DATA MULTIPLE" >> $(BUILD_DIR)/$@
+	@cat libxvidcore.def | tr '\t' '_' | tr ';' ' ' >> $(BUILD_DIR)/$@
+endif
+
 #-----------------------------------------------------------------------------
 # Installation
 #-----------------------------------------------------------------------------
@@ -150,12 +175,19 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB)
 	@echo "  I: $(libdir)/$(STATIC_LIB)"
 	@$(INSTALL) -m 644 $(BUILD_DIR)/$(STATIC_LIB) $(DESTDIR)$(libdir)/$(STATIC_LIB)
 ifeq ($(SHARED_EXTENSION),dll)
+ifeq ($(shell uname -s),OS/2)
+	@echo "  I: $(libdir)/$(SHARED_LIB)"
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(SHARED_LIB) $(DESTDIR)$(libdir)/$(SHARED_LIB)
+	@echo "  I: $(libdir)/$(IMP_LIB)"
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(IMP_LIB) $(DESTDIR)$(libdir)/$(IMP_LIB)
+else
 	@echo "  I: $(libdir)/$(SHARED_LIB).a"
 	@$(INSTALL) -m 644 $(BUILD_DIR)/$(SHARED_LIB).a $(DESTDIR)$(libdir)/$(SHARED_LIB).a
 	@echo "  D: $(bindir)"
 	@$(INSTALL) -d $(DESTDIR)$(bindir)
 	@echo "  I: $(bindir)/$(SHARED_LIB)"
 	@$(INSTALL) -m 755 $(BUILD_DIR)/$(SHARED_LIB) $(DESTDIR)$(bindir)/$(SHARED_LIB)
+endif
 else
 	@echo "  I: $(libdir)/$(SHARED_LIB)"
 	@$(INSTALL) -m 644 $(BUILD_DIR)/$(SHARED_LIB) $(DESTDIR)$(libdir)/$(SHARED_LIB)

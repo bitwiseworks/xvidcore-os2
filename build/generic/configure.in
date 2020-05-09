@@ -366,7 +366,7 @@ case "$target_os" in
 	;;
      os2-emx*)
 	AC_MSG_RESULT([ok])
-	STATIC_LIB="xvidcore_dll.\$(STATIC_EXTENSION)"
+	STATIC_LIB="xvidcore.\$(STATIC_EXTENSION)"
 	SHARED_LIB="xvidcore.\$(SHARED_EXTENSION)"
 	SPECIFIC_LDFLAGS="-Zdll"
 	;;

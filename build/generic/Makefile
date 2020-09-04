@@ -68,7 +68,7 @@ ifeq ($(shell uname -s),OS/2)
 VENDOR ?=community
 BUILD_INFO=\#\#1\#\# $(shell date +'%d %b %Y %H:%M:%S')     $(shell uname -n)
 BUILDLEVEL_INFO=@\#$(VENDOR):$(PACKAGE_VERSION)\#@$(BUILD_INFO)::::0::
-IMP_LIB = xvidcode_dll.a
+IMP_LIB = xvidcore_dll.a
 else
 IMP_LIB =
 endif
